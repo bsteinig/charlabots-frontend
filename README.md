@@ -1,6 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+<div align="center">
+    <h3 align="center">CharlaBots</h3>
+    <p align="center">
+    DESCRIPTION HERE
+    </p>
+</div>
+
+## About The Project
+
+[![Slow Analysis Screen Shot][project-screenshot]](https://web.eecs.umich.edu/~mjguz/slow-analysis/)
+
+ABOUT HERE
 
 ## Getting Started
+
+First time setup:
+
+1. If you are already using nvm (node version maanger)
+
+Use the following command to set your node version
+
+```bash
+nvm use
+```
+
+If you aren't using nvm, you should, or you can install Node.js 18.12.1 from https://nodejs.org/en/. Just make sure you uninstall any existing node installations first.
+
+1. Install required packages
+
+All you have to do is run this command inside the project directory
+
+```bash
+npm install
+```
+
+That should be all the setup you need.
+
+## Running the service
 
 First, run the development server:
 
@@ -8,31 +44,42 @@ First, run the development server:
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then, open your localhost at port 3000
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+http://localhost:3000/
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+(Highly recommend the Comment Anchors extension for VSCode)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+##  Building the service
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+To build the service, run the following command:
 
-## Learn More
+```bash
+npm run export
+```
 
-To learn more about Next.js, take a look at the following resources:
+This will create a static version of the site in the `out` directory. You can then deploy this directory to the eecs server.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Testing the service
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+To run the tests, run the following command: (Not Implemented)
 
-## Deploy on Vercel
+```bash
+npm run cypress
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Usage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Contact
+
+Project Link - [https://github.com/bsteinig/slow-analysis](https://github.com/bsteinig/slow-analysis)
+
+
+[project-screenshot]: images/screenshot.png
