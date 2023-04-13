@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
+import bubbleTheme from '../styles/bubbleTheme'
 
 export default function App(props) {
   const { Component, pageProps } = props;
@@ -14,10 +15,7 @@ export default function App(props) {
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: 'light',
-        }}
+        theme={bubbleTheme}
       >
         <Component {...pageProps} />
       </MantineProvider>

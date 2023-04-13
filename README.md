@@ -24,7 +24,7 @@ Use the following command to set your node version
 nvm use
 ```
 
-If you aren't using nvm, you should, or you can install Node.js 18.12.1 from https://nodejs.org/en/. Just make sure you uninstall any existing node installations first.
+If you aren't using nvm, you should, or you can install Node.js 18.15.0 from https://nodejs.org/en/. Just make sure you uninstall any existing node installations first.
 
 1. Install required packages
 
