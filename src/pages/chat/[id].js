@@ -4,6 +4,7 @@ import {
   Container,
   Group,
   Loader,
+  ScrollArea,
   Space,
   Stack,
   Text,
@@ -15,7 +16,7 @@ import {
 import { IconHome2 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getBlocks } from "@/lib/createBlocks";
 import { createCanonicalArray } from "@/lib/parseCanonical";
 import { chat, splitOnNewline } from "@/lib/handleInputs";
@@ -64,10 +65,12 @@ const useStyles = createStyles((theme) => ({
     animation: `${fadeIn} 0.3s ease-in-out forwards`,
   },
   left: {
+    margin: `${theme.spacing.sm} 0`,
     display: "flex",
     flexDirection: "row",
   },
   right: {
+    margin: `${theme.spacing.sm} 0`,
     display: "flex",
     flexDirection: "row-reverse",
   },
@@ -120,6 +123,13 @@ function Chat() {
     }
   }, [router.isReady]);
 
+  const chatWindow = useRef(null);
+  const scrollToBottom = () =>
+    chatWindow.current.scrollTo({
+      top: chatWindow.current.scrollHeight,
+      behavior: "smooth",
+    });
+
   const handleChat = (message) => {
     console.log("Message:", interpreted);
     form.reset();
@@ -128,6 +138,7 @@ function Chat() {
       side: "right",
     };
     handlers.append(user_msg);
+    scrollToBottom();
     setTimeout(() => {
       let response = "";
       for (let i = 0; i < interpreted.length; i++) {
@@ -143,6 +154,9 @@ function Chat() {
         side: "left",
       };
       handlers.append(response_msg);
+      setTimeout(() => {
+        scrollToBottom();
+      }, 50);
     }, 250);
   };
 
@@ -166,11 +180,10 @@ function Chat() {
           <Title order={2} align="center">
             {data ? `Let's Chat with ${data.botname}!` : "Loading"}
           </Title>
-          <Space />
         </Group>
         {loaded ? (
           <Container size="xl" className={classes.chatWrapper}>
-            <div className={classes.chatBox}>
+            <ScrollArea className={classes.chatBox} viewportRef={chatWindow}>
               {messages.map((message, index) => {
                 return (
                   <div
@@ -190,7 +203,7 @@ function Chat() {
                   </div>
                 );
               })}
-            </div>
+            </ScrollArea>
             <form
               onSubmit={form.onSubmit((values) => handleChat(values.message))}
               style={{

@@ -66,7 +66,12 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
 
   const handleClick = (id) => {
     console.log(id);
-    router.push("/chat/" + id)
+    if (currentMenu === "create") {
+      router.push("/create/" + id);
+    }
+    if (currentMenu === "chat") {
+        router.push("/chat/" + id)
+    }
   }
 
   return (
