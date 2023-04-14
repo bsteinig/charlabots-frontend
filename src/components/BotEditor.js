@@ -18,9 +18,7 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { CharlaBotsHighlight } from "@/lib/customLang";
 import { lowlight } from "lowlight";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
-import { translateLineToCanonical, updateCanonicalCode } from "@/lib/textToCanonical";
+import React from "react";
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -41,11 +39,8 @@ const useStyles = createStyles((theme) => ({
 
 lowlight.registerLanguage("cb", CharlaBotsHighlight);
 
-function Create() {
-  const { classes, cx } = useStyles();
-
-  const router = useRouter();
-  const { id } = router.query;
+function BotEditor({ formHandler, name, description, code }) {
+  const { classes } = useStyles();
 
   const editor = useEditor({
     extensions: [
@@ -54,53 +49,19 @@ function Create() {
         lowlight,
       }),
     ],
-    content: "<pre><code></code></pre>",
+    content: `<pre><code>${code ? code : ""} </code></pre>`,
   });
 
   const form = useForm({
     initialValues: {
-      name: "",
-      description: "",
+      name: name ? name : "",
+      description: description ? description : "",
     },
     validate: {
       name: (value) => (value.length === 0 ? "Name is required" : null),
     },
   });
 
-  const handleCreation = (values) => {
-    
-    if (editor.getText().trim() == "") {
-      alert("Bot code cannot be empty");
-      return;
-    }
-
-    let url = "http://localhost:8000/getLanguageData/?langid=" + id;
-    fetch(url, {})
-      .then((response) => response.json())
-      .then((data) => {
-        let canonicalCode = "";
-        let translatedCode = editor.getText();
-
-        let translatedLines = translatedCode.split("\n");
-        let mappings = data;
-
-        for (let i = 0; i < translatedLines.length; i++) {
-          let line = translatedLines[i].trim();
-          if (line == "") continue;
-          line = translateLineToCanonical(mappings, line);
-          canonicalCode += line;
-          if (i != translatedLines.length - 1) {
-            canonicalCode += "(nw-ln)";
-          }
-        }
-        canonicalCode.trim();
-        //send the updated code back to database
-        updateCanonicalCode(false, canonicalCode, values.name, values.description, null);
-      });
-  };
-
-
-  
   return (
     <>
       <Head>
@@ -122,7 +83,7 @@ function Create() {
             {router.isReady ? `Create a Bot` : "Loading"}
           </Title>
         </Group>
-        <form onSubmit={form.onSubmit((values) => handleCreation(values))}>
+        <form onSubmit={form.onSubmit((values) => formHandler(values))}>
           <Container size="lg">
             <TextInput
               className={classes.topInputs}
@@ -151,7 +112,6 @@ function Create() {
             </Center>
             <Text size="lg">Add Code Below</Text>
             <RichTextEditor
-            
               editor={editor}
               classNames={{ content: classes.editor }}
               styles={(theme) => ({
@@ -171,15 +131,17 @@ function Create() {
                     " & .hljs-comment, & .hljs-quote": {
                       color: theme.colors.green[3],
                     },
-                    "& .hljs-keyword, & .hljs-selector-tag, & .hljs-meta-keyword": {
-                      color: theme.colors.blue[5],
-                    },
-                    "& .hljs-number, & .hljs-literal, & .hljs-variable, & .hljs-template-variable, & .hljs-tag .hljs-attr": {
-                      color: theme.colors.violet[7],
-                    },
+                    "& .hljs-keyword, & .hljs-selector-tag, & .hljs-meta-keyword":
+                      {
+                        color: theme.colors.blue[5],
+                      },
+                    "& .hljs-number, & .hljs-literal, & .hljs-variable, & .hljs-template-variable, & .hljs-tag .hljs-attr":
+                      {
+                        color: theme.colors.violet[7],
+                      },
                     "& .hljs-built_in": {
                       color: theme.colors.grape[5],
-                    }
+                    },
                   },
                 },
               })}
@@ -199,4 +161,4 @@ function Create() {
   );
 }
 
-export default Create;
+export default BotEditor;

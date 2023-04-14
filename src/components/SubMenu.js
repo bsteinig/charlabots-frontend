@@ -15,39 +15,43 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
   const router = useRouter();
 
   // TODO: Replace with server endpoint
-  const options = {
-    chat: {
+  const requests = {
+    bot: {
       url: "http://localhost:8000/getAllBotNames/",
       decorator: "bot",
       tip: "Bot:",
     },
 
-    create: {
+    language: {
       url: "http://localhost:8000/getAllLanguageNames/",
       decorator: "language",
       tip: "Select a Language:",
-    },
-
-    edit: {
-      url: "http://localhost:8000/getAllLanguageNames/",
-      decorator: "language",
-      tip: "Select a Language:",
-    },
-
-    "bot-chat": {
-      url: "http://localhost:8000/getAllBotNames/",
-      decorator: "bot",
-      tip: "Bot:",
     },
   };
 
+  const options = {
+    chat: [
+      'bot',
+    ],
+    create: [
+      'language',
+    ],
+    edit: [
+      'language',
+      'bot',
+    ],
+  }
+
+
   const [list, setList] = useState([]);
+  const [stage, setStage] = useState(0);
+  const [langId, setLangId] = useState(0);
+  const [botId, setBotId] = useState(0);
 
   useEffect(() => {
-    console.log("SubMenu:", currentMenu);
 
     if (currentMenu in options) {
-      fetch(options[currentMenu].url, {})
+      fetch(requests[options[currentMenu][stage]].url, {})
         .then((response) => response.json())
         .then((data) => {
           let temp = [];
@@ -62,7 +66,7 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
           setList(temp);
         });
     }
-  }, [currentMenu]);
+  }, [currentMenu, stage]);
 
   const handleClick = (id) => {
     console.log(id);
@@ -70,14 +74,22 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
       router.push("/create/" + id);
     }
     if (currentMenu === "chat") {
-        router.push("/chat/" + id)
+      router.push("/chat/" + id);
     }
-  }
+    if (currentMenu === "edit") {
+      if (stage === 0) {
+        setLangId(id);
+        setStage(1);
+      } else if (stage === 1) {
+        router.push("/edit/" + langId + "?botId=" + id);
+      }
+    }
+  };
 
   return (
     <div>
       <Text size="lg" align="center">
-        {options[currentMenu].tip}
+        {requests[options[currentMenu][stage]].tip}
       </Text>
       <Stack pb={120}>
         {list.map((item) => {
