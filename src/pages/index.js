@@ -17,6 +17,8 @@ const useStyles = createStyles((theme) => ({
   },
   siteTitle: {
     fontSize: "min(10vmin, 20rem)",
+    userSelect: "none",
+    cursor: "pointer",
   },
   menuButton: {
     width: "min(90vw, 600px)",
@@ -47,12 +49,16 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={classes.root}>
-        {currentMenu === "home" ? (
-          <Container size="md">
-            <Stack align="center" spacing={60} pt={100}>
-              <Title order={1} className={classes.siteTitle}>
-                CharlaBots
-              </Title>
+        <Container size="md">
+          <Stack align="center" spacing={60} pt={100} justify="flex-start">
+            <Title
+              order={1}
+              className={classes.siteTitle}
+              onClick={() => setCurrentMenu("home")}
+            >
+              CharlaBots
+            </Title>
+            {currentMenu === "home" ? (
               <Stack>
                 {options.map((option) => {
                   return (
@@ -67,11 +73,14 @@ export default function Home() {
                   );
                 })}
               </Stack>
-            </Stack>
-          </Container>
-        ) : (
-          <SubMenu currentMenu={currentMenu} setCurrentMenu={setCurrentMenu} />
-        )}
+            ) : (
+              <SubMenu
+                currentMenu={currentMenu}
+                setCurrentMenu={setCurrentMenu}
+              />
+            )}
+          </Stack>
+        </Container>
       </main>
     </>
   );
