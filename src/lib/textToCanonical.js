@@ -69,19 +69,22 @@ export function updateCanonicalCode(
       // does not allow you to edit a bot name to match another one
       if (!isNameMatch) {
         if (isEditor) {
-          let url =
-            "http://localhost:8000/updateBot/?botID=" +
-            botID +
-            "&botName=" +
-            botName +
-            "&canonicalCode=" +
-            canonicalCode +
-            "&description=" +
-            description;
-          fetch(url, { method: "PATCH" });
-        } else {
-          console.log("adding canonical code: ", canonicalCode);
+          let body = {
+            botid: botID,
+            name: botName,
+            description: description,
+            code: canonicalCode,
+          };
 
+          let url = "http://localhost:8000/updateBot/";
+          fetch(url, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+        } else {
           let body = {
             name: botName,
             description: description,

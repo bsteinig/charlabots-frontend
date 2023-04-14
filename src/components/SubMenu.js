@@ -19,13 +19,13 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
     bot: {
       url: "http://localhost:8000/getAllBotNames/",
       decorator: "bot",
-      tip: "Bot:",
+      tip: `Bot`,
     },
 
     language: {
       url: "http://localhost:8000/getAllLanguageNames/",
       decorator: "language",
-      tip: "Select a Language:",
+      tip: "Select a Language",
     },
   };
 
@@ -38,6 +38,10 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
     ],
     edit: [
       'language',
+      'bot',
+    ],
+    'bot-chat': [
+      'bot',
       'bot',
     ],
   }
@@ -84,12 +88,21 @@ function SubMenu({ currentMenu, setCurrentMenu }) {
         router.push("/edit/" + langId + "?botId=" + id);
       }
     }
+    if (currentMenu === "bot-chat") {
+      if (stage === 0) {
+        setBotId(id);
+        setStage(1);
+      } else if (stage === 1) {
+        router.push("/chat/bots/" + botId + "?botId=" + id);
+      }
+    }
+
   };
 
   return (
     <div>
       <Text size="lg" align="center">
-        {requests[options[currentMenu][stage]].tip}
+        {requests[options[currentMenu][stage]].tip}{currentMenu == 'bot-chat' ? ` ${stage+1}` : ''}:
       </Text>
       <Stack pb={120}>
         {list.map((item) => {

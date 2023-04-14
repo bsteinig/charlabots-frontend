@@ -21,11 +21,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { translateLineToCanonical, updateCanonicalCode } from "@/lib/textToCanonical";
+import BotEditor from "@/components/BotEditor";
 
 const useStyles = createStyles((theme) => ({
   root: {
     minHeight: "100vh",
-    backgroundColor: "#b1c8e9",
+    backgroundColor: "#d7e5f9",
   },
   topInputs: {
     maxWidth: "max(50%,300px)",
@@ -67,9 +68,9 @@ function Create() {
     },
   });
 
-  const handleCreation = (values) => {
+  const handleCreation = (values, codeText) => {
     
-    if (editor.getText().trim() == "") {
+    if (codeText.trim() == "") {
       alert("Bot code cannot be empty");
       return;
     }
@@ -79,7 +80,7 @@ function Create() {
       .then((response) => response.json())
       .then((data) => {
         let canonicalCode = "";
-        let translatedCode = editor.getText();
+        let translatedCode = codeText;
 
         let translatedLines = translatedCode.split("\n");
         let mappings = data;
@@ -122,78 +123,7 @@ function Create() {
             {router.isReady ? `Create a Bot` : "Loading"}
           </Title>
         </Group>
-        <form onSubmit={form.onSubmit((values) => handleCreation(values))}>
-          <Container size="lg">
-            <TextInput
-              className={classes.topInputs}
-              label="Name"
-              size="md"
-              {...form.getInputProps("name")}
-            />
-            <Textarea
-              my={20}
-              className={classes.topInputs}
-              label="Description"
-              size="md"
-              {...form.getInputProps("description")}
-              autosize
-              minRows={3}
-              maxRows={5}
-            />
-            <Center>
-              <Button
-                type="submit"
-                color="blue"
-                leftIcon={<IconDeviceFloppy />}
-              >
-                Save Bot
-              </Button>
-            </Center>
-            <Text size="lg">Add Code Below</Text>
-            <RichTextEditor
-            
-              editor={editor}
-              classNames={{ content: classes.editor }}
-              styles={(theme) => ({
-                content: {
-                  pre: {
-                    background: theme.colors.dark[8],
-                    borderRadius: theme.fn.radius(),
-                    color: theme.colors.dark[0],
-                    fontFamily: theme.fontFamilyMonospace,
-
-                    "& code": {
-                      background: "none",
-                      color: "inherit",
-                      fontSize: theme.fontSizes.md,
-                      padding: 0,
-                    },
-                    " & .hljs-comment, & .hljs-quote": {
-                      color: theme.colors.green[3],
-                    },
-                    "& .hljs-keyword, & .hljs-selector-tag, & .hljs-meta-keyword": {
-                      color: theme.colors.blue[5],
-                    },
-                    "& .hljs-number, & .hljs-literal, & .hljs-variable, & .hljs-template-variable, & .hljs-tag .hljs-attr": {
-                      color: theme.colors.violet[7],
-                    },
-                    "& .hljs-built_in": {
-                      color: theme.colors.grape[5],
-                    }
-                  },
-                },
-              })}
-            >
-              <RichTextEditor.Toolbar>
-                <RichTextEditor.ControlsGroup>
-                  <RichTextEditor.CodeBlock />
-                </RichTextEditor.ControlsGroup>
-              </RichTextEditor.Toolbar>
-
-              <RichTextEditor.Content />
-            </RichTextEditor>
-          </Container>
-        </form>
+        <BotEditor formHandler={handleCreation} isEditing={false} />
       </main>
     </>
   );

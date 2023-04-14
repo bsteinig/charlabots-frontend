@@ -8,12 +8,13 @@ import {
   createStyles,
 } from "@mantine/core";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const useStyles = createStyles((theme) => ({
   root: {
     minHeight: "100vh",
-    backgroundColor: "#b1c8e9",
+    backgroundColor: "#d7e5f9",
   },
   siteTitle: {
     fontSize: "min(10vmin, 20rem)",
@@ -29,6 +30,8 @@ const useStyles = createStyles((theme) => ({
 
 export default function Home() {
   const { classes } = useStyles();
+
+  const router = useRouter();
 
   const options = [
     { label: "Chat with a Bot", value: "chat" },
@@ -66,7 +69,11 @@ export default function Home() {
                       className={classes.menuButton}
                       size="xl"
                       key={option.value}
-                      onClick={() => setCurrentMenu(option.value)}
+                      onClick={() => {
+                        option.value === "bot-lang"
+                          ? router.push("/createlanguage")
+                          : setCurrentMenu(option.value);
+                      }}
                     >
                       {option.label}
                     </Button>
