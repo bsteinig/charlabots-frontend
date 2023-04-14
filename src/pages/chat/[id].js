@@ -1,13 +1,16 @@
 import {
   Button,
+  Center,
   Container,
   Group,
+  Loader,
   Space,
   Stack,
   Text,
   TextInput,
   Title,
   createStyles,
+  keyframes,
 } from "@mantine/core";
 import { IconHome2 } from "@tabler/icons-react";
 import Head from "next/head";
@@ -19,6 +22,11 @@ import { chat, splitOnNewline } from "@/lib/handleInputs";
 import { useForm } from "@mantine/form";
 import { useListState } from "@mantine/hooks";
 
+const fadeIn = keyframes({
+  "0%": { opacity: 0, transform: "translate3d(0, 50%, 0)" },
+  "100%": { opacity: 1, transform: "translate3d(0, 0, 0)" },
+});
+
 const useStyles = createStyles((theme) => ({
   root: {
     minHeight: "100vh",
@@ -29,21 +37,52 @@ const useStyles = createStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    height: "100%",
   },
   chatBox: {
     backgroundColor: "#ebebeb",
-    width: "800px",
+    width: "max(80%,300px)",
     height: "80vh",
+    borderRadius: `${theme.radius.md} ${theme.radius.md} 0 0`,
+    padding: theme.spacing.md,
+    overflowY: "auto",
+  },
+  inputBar: {
+    backgroundColor: "#ebebeb",
+    borderRadius: `0 0 ${theme.radius.md} ${theme.radius.md}`,
+    width: "max(80%,300px)",
+  },
+  input: {
+    flexGrow: 1,
+  },
+  message: {
+    backgroundColor: "#fff",
+    width: "fit-content",
+    maxWidth: "80%",
+    padding: `8px ${theme.spacing.sm}`,
     borderRadius: theme.radius.md,
+    animation: `${fadeIn} 0.3s ease-in-out forwards`,
+  },
+  left: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  right: {
+    display: "flex",
+    flexDirection: "row-reverse",
+  },
+  colorMessage: {
+    backgroundColor: theme.colors.blue[2],
   },
 }));
 
 function Chat() {
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
 
   const router = useRouter();
   const { id } = router.query;
 
+  const [loaded, setLoaded] = useState(false);
   const [data, setData] = useState({});
   const [blocks, setBlocks] = useState([]);
   const [interpreted, setInterpreted] = useState({});
@@ -69,15 +108,20 @@ function Chat() {
         .then((response) => response.json())
         .then((res) => {
           if (res.data) {
+            console.log("Chat:", res.data);
             setData(res.data);
-            setBlocks(getBlocks(res.data.canonical));
-            setInterpreted(createCanonicalArray(blocks));
+            const blockData = getBlocks(res.data.canonical);
+            setBlocks(blockData);
+            const canonicalArray = createCanonicalArray(blockData);
+            setInterpreted(canonicalArray);
+            setLoaded(true);
           }
         });
     }
-  }, [id]);
+  }, [router.isReady]);
 
   const handleChat = (message) => {
+    console.log("Message:", interpreted);
     form.reset();
     const user_msg = {
       message: message,
@@ -111,8 +155,9 @@ function Chat() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={classes.root}>
-        <Group p={20} position="apart">
+        <Group p={20} position="center">
           <Button
+            style={{ position: "absolute", left: "3%" }}
             leftIcon={<IconHome2 size="1.2rem" />}
             onClick={() => router.push("/")}
           >
@@ -123,24 +168,55 @@ function Chat() {
           </Title>
           <Space />
         </Group>
-        <Container size="xl" className={classes.chatWrapper}>
-          <Stack className={classes.chatBox}>
-            {messages.map((message, index) => {
-              return <Text key={index}>{message.message}</Text>;
-            })}
-          </Stack>
-          <form
-            onSubmit={form.onSubmit((values) => handleChat(values.message))}
-          >
-            <Group>
-              <TextInput
-                placeholder="Enter your message"
-                {...form.getInputProps("message")}
-              />
-              <Button type="submit">Send</Button>
-            </Group>
-          </form>
-        </Container>
+        {loaded ? (
+          <Container size="xl" className={classes.chatWrapper}>
+            <div className={classes.chatBox}>
+              {messages.map((message, index) => {
+                return (
+                  <div
+                    key={index}
+                    className={cx({
+                      [classes.left]: message.side === "left",
+                      [classes.right]: message.side === "right",
+                    })}
+                  >
+                    <Text
+                      className={cx(classes.message, {
+                        [classes.colorMessage]: message.side === "right",
+                      })}
+                    >
+                      {message.message}
+                    </Text>
+                  </div>
+                );
+              })}
+            </div>
+            <form
+              onSubmit={form.onSubmit((values) => handleChat(values.message))}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Group className={classes.inputBar}>
+                <TextInput
+                  className={classes.input}
+                  size="lg"
+                  placeholder="Enter your message"
+                  {...form.getInputProps("message")}
+                />
+                <Button size="lg" color="green" type="submit">
+                  Send
+                </Button>
+              </Group>
+            </form>
+          </Container>
+        ) : (
+          <Center style={{ height: "80vh" }}>
+            <Loader size={150} />
+          </Center>
+        )}
       </main>
     </>
   );
